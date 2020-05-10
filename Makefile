@@ -24,18 +24,18 @@ obj/%.o: src/%.cpp $(HDR)
 
 .PHONY: all
 
-all: crawler
+all: thou_crawler
 
-crawler: $(CRAWLER) $(OBJ) $(HDR)
+thou_crawler: $(CRAWLER) $(OBJ) $(HDR)
 	@echo -e "\u001b[34mLINKING OBJECTS TO EXECUTABLE $@\u001b[0m"
 	@$(CXX) $(CFLAGS) $(DEFS) $(CLIENT) $(OBJ) -o $@ $(LINK)
 
 
 prof_pdf:
-	gprof aite gmon.out > analysis.txt
+	gprof thou_crawler gmon.out > analysis.txt
 	gprof2dot -o d.dot analysis.txt
 	dot -Tpdf d.dot > prof.pdf
 
 
 clean:
-	rm -rf obj aite_client aite_server
+	rm -rf obj thou_crawler thou_server
