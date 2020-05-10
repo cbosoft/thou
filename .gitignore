@@ -1,0 +1,13 @@
+__pycache__
+tags
+*.pdf
+gmon.out
+vgcore*
+thou_crawler
+thou_server
+test
+obj
+analysis.txt
+d.dot
+*/.*.un~
+resed
