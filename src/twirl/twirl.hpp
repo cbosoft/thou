@@ -4,13 +4,14 @@
 #include <string>
 #include <sstream>
 
-#include "twirl_response.hpp"
+#include "../ship/ship.hpp"
 
 class Twirl {
 
   private:
 
-    std::stringstream buffer;
+    char *buffer;
+    int buffer_len;
 
     Twirl();
     ~Twirl();
@@ -18,7 +19,7 @@ class Twirl {
   public:
 
     static Twirl &get_singleton();
-    void recieve(std::string data);
-    TwirlResponse get(std::string url);
+    void recieve(char *data, int len);
+    Ship get(std::string url);
 
 };
