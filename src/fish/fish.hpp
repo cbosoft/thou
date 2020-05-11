@@ -4,18 +4,18 @@
 
 #include "node.hpp"
 
-class Ship {
+class Fish {
 
   private:
 
-    ShipNode *root;
-    void parse(ShipNode *parent, std::string html_source);
+    FishNode *root;
+    void parse(FishNode *parent, std::string html_source);
 
   public:
 
-    Ship();
-    Ship(std::string html_source);
-    ~Ship();
+    Fish();
+    Fish(std::string html_source);
+    ~Fish();
 
     std::string title();
     std::list<std::string> abundant_interesting_words();

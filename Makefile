@@ -1,16 +1,20 @@
 CXX = g++
 CFLAGS = -g -pg -Wall -Wextra -Werror -std=c++17 -O2 $(shell curl-config --cflags)
 
-CRAWLER = \
-					obj/crawler/main.o
+TRAWLER = \
+					obj/trawler/main.o
 
-TWIRL = \
-				obj/twirl/twirl.o \
-				obj/twirl/twirl_response.o
+NET = \
+				obj/net/net.o
+
+FISH = \
+			 obj/fish/fish.o \
+			 obj/fish/node.o \
+			 obj/fish/parse.o
 
 
 HDR = $(shell ls src/**/*.hpp)
-OBJ = $(CRAWLER) $(TWIRL)
+OBJ = $(TRAWLER) $(FISH) $(NET)
 LINK = -lpthread $(shell curl-config --libs)
 DEFS =
 
@@ -26,9 +30,9 @@ obj/%.o: src/%.cpp $(HDR)
 
 all: thou_crawler
 
-thou_crawler: $(CRAWLER) $(OBJ) $(HDR)
+thou_crawler: $(OBJ) $(HDR)
 	@echo -e "\u001b[34mLINKING OBJECTS TO EXECUTABLE $@\u001b[0m"
-	@$(CXX) $(CFLAGS) $(DEFS) $(CLIENT) $(OBJ) -o $@ $(LINK)
+	@$(CXX) $(CFLAGS) $(DEFS) $(OBJ) -o $@ $(LINK)
 
 
 prof_pdf:

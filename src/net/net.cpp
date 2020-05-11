@@ -3,15 +3,15 @@
 
 #include <curl/curl.h>
 
-#include "twirl.hpp"
+#include "net.hpp"
 
-Twirl::Twirl()
+Net::Net()
   : buffer(nullptr), buffer_len(0)
 {
   curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
-Twirl::~Twirl()
+Net::~Net()
 {
   if (this->buffer) {
     free(this->buffer);
@@ -19,20 +19,20 @@ Twirl::~Twirl()
   curl_global_cleanup();
 }
 
-Twirl &Twirl::get_singleton()
+Net &Net::get_singleton()
 {
-  static Twirl t;
+  static Net t;
   return t;
 }
 
-size_t recieve_bytes(char *data, size_t size, size_t nmemb, Twirl *t)
+size_t recieve_bytes(char *data, size_t size, size_t nmemb, Net *t)
 {
   (void) size; // from the man: "size is always 1." ...
   t->recieve(data, nmemb);
   return nmemb;
 }
 
-void Twirl::recieve(char *data, int len)
+void Net::recieve(char *data, int len)
 {
   this->buffer_len += len;
   std::cerr << buffer_len << std::endl;
@@ -43,7 +43,7 @@ void Twirl::recieve(char *data, int len)
   this->buffer[this->buffer_len] = 0;
 }
 
-Ship Twirl::get(std::string url)
+Fish Net::get(std::string url)
 {
   if (this->buffer) {
     free(this->buffer);
@@ -59,5 +59,5 @@ Ship Twirl::get(std::string url)
 
 
   std::string r = std::string(this->buffer);
-  return Ship(r);
+  return Fish(r);
 }
