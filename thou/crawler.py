@@ -1,3 +1,5 @@
+import requests
+from bs4 import BeautifulSoup
 from thou.database import Database
 
 class Crawler:
@@ -15,8 +17,12 @@ class Crawler:
             self.scrape(self.seed)
 
     def scrape(self, url):
-        links = self.get_links(url)
-        self.database.register_link(links)
+        resp = requests.get(url)
+        if not resp:
+            return []
+
+        # download page
+        page = BeautifulSoup(resp.content, 'html.parser')
 
     def get_links(self, url):
         '''get page pointed to by link, return link obj with meta data'''
