@@ -48,6 +48,13 @@ class Crawler:
         if not resp:
             return []
 
+        try:
+            content_type = resp.headers['content-type']
+            if not content_type.startswith('text/html'):
+                return []
+        except KeyError:
+            pass
+
         # download page
         page = BeautifulSoup(resp.content, 'html.parser')
 
@@ -67,6 +74,7 @@ class Crawler:
             link = tag.get('href')
             if not link.startswith('http'):
                 link = url+'/'+link
+
             links.append(link)
         return links
 
