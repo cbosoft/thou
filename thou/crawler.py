@@ -23,16 +23,15 @@ class Crawler:
         self.database = Database(database_path)
         self.urls_q = queue.Queue()
 
-        try:
-            len(seed)
+        if isinstance(seed, list):
             for url in seed:
                 if not isinstance(url, str):
                     raise TypeError('URLs are expected to be in str format.')
                 self.urls_q.put(url)
-        except:
-            if not isinstance(seed, str):
-                raise TypeError('URLs are expected to be in str format.')
+        elif isinstance(seed, str):
             self.urls_q.put(seed)
+        else:
+            raise TypeError('URLs are expected to be in str format.')
 
 
     def run(self):
