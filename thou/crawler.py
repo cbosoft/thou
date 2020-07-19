@@ -2,6 +2,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from thou.database import Database
+from thou.words import top_words
 
 ANSI_ESCAPE_RE = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
 
