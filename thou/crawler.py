@@ -8,6 +8,9 @@ ANSI_ESCAPE_RE = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
 def remove_escapes(s):
     return ANSI_ESCAPE_RE.sub('', s)
 
+def tags_with_href(tag):
+    return tag.has_attr('href')
+
 class Crawler:
     '''crawls the web for links, and storing the result in a database'''
 
