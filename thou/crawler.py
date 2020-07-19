@@ -1,5 +1,6 @@
 import re
 import queue
+from time import sleep
 
 import requests
 from bs4 import BeautifulSoup
@@ -38,6 +39,7 @@ class Crawler:
         while True:
             url = self.urls_q.get()
             new_links = self.scrape(url)
+            sleep(0.1)
             for link in new_links:
                 self.urls_q.put(link)
 
