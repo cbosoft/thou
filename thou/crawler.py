@@ -1,6 +1,12 @@
+import re
 import requests
 from bs4 import BeautifulSoup
 from thou.database import Database
+
+ANSI_ESCAPE_RE = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
+
+def remove_escapes(s):
+    return ANSI_ESCAPE_RE.sub('', s)
 
 class Crawler:
     '''crawls the web for links, and storing the result in a database'''
