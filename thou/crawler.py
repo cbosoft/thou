@@ -1,6 +1,9 @@
 import re
+import queue
+
 import requests
 from bs4 import BeautifulSoup
+
 from thou.database import Database
 from thou.words import top_words
 
@@ -17,14 +20,27 @@ class Crawler:
 
     def __init__(self, seed, database_path='./thou.db'):
         self.database = Database(database_path)
-        self.seed = seed
+        self.urls_q = queue.Queue()
+
+        try:
+            len(seed)
+            for url in seed:
+                if not isinstance(url, str):
+                    raise TypeError('URLs are expected to be in str format.')
+                self.urls_q.put(url)
+        except:
+            if not isinstance(seed, str):
+                raise TypeError('URLs are expected to be in str format.')
+            self.urls_q.put(seed)
+
 
     def run(self):
-        if isinstance(self.seed, list):
-            for url in self.seed:
-                self.scrape(url)
-        else:
-            self.scrape(self.seed)
+        while True:
+            url = self.urls_q.get()
+            new_links = self.scrape(url)
+            for link in new_links:
+                self.urls_q.put(link)
+
 
     def scrape(self, url):
         resp = requests.get(url)
@@ -34,9 +50,6 @@ class Crawler:
         # download page
         page = BeautifulSoup(resp.content, 'html.parser')
 
-    def get_links(self, url):
-        '''get page pointed to by link, return link obj with meta data'''
-        return []
         # get page meta data
         meta = self.get_meta(page)
         self.database.register_link(url, meta)
@@ -62,5 +75,6 @@ class Crawler:
         s = remove_escapes(s)
         s = top_words(s)
         return s
+
 
 
