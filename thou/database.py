@@ -9,29 +9,39 @@ class Database:
 
             if not os.path.isfile(path):
                 raise Exception("database exists and is not a file")
-
-            conn = sql.connect(path)
-            try:
-                res = conn.execute("SELECT * FROM A;");
+            elif self.check_schema():
                 print("table loaded")
-                conn.close()
-            except:
-                conn.close()
+            else:
                 self.init_tables()
         else:
             self.init_tables()
 
 
-    def init_tables(self):
-        print("initialising database")
+    def check_schema(self):
         conn = sql.connect(self.path)
-        conn.execute("CREATE TABLE \"A\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT);");
-        # TODO: create database scheme here
+        rv = False
+        try:
+            res = conn.execute("SELECT * FROM STORE")
+            rv = True
+        except:
+            pass
+        conn.close()
+        return rv
 
 
-    def register_link(self, link, meta):
-        print(link, meta)
-        pass
+    def init_tables(self):
+        conn = sql.connect(self.path)
+        conn.execute("CREATE TABLE \"STORE\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"URL\" TEXT NOT NULL, \"TAGS\" TEXT NOT NULL);");
+        print("table created")
+        conn.close()
+
+
+    def register_link(self, url, meta):
+        conn = sql.connect(self.path)
+        meta = " ".join(sorted(meta))
+        print(url, meta)
+        conn.execute(f"INSERT OR REPLACE INTO STORE(\"URL\", \"TAGS\") VALUES(\"{url}\", \"{meta}\")")
+        conn.close()
 
 
 if __name__ == "__main__":
