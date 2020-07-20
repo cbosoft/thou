@@ -12,7 +12,6 @@ def format_dt(dt):
     if dt == 0.0:
         return '0s'
     e = int(math.log10(dt))
-    print(e)
     unit = 's'
     if e < -6:
         unit = 'ns'
@@ -23,8 +22,6 @@ def format_dt(dt):
     elif e < 0:
         unit = 'ms'
         dt *= 1e3
-    elif e < 3:
-        pass
     return f'{dt:.2f}{unit}'
 
 class ServerHandler(http.server.SimpleHTTPRequestHandler):
