@@ -1,6 +1,7 @@
 import re
 import queue
 from time import sleep
+from threading import Thread
 
 import requests
 from bs4 import BeautifulSoup
@@ -32,6 +33,19 @@ class Crawler:
             self.urls_q.put(seed)
         else:
             raise TypeError('URLs are expected to be in str format.')
+
+
+    def run_threads(self, n=0):
+
+        self.running = True
+
+        threads = list()
+        for i in range(n):
+            threads.append(Thread(target=self.run))
+            threads[-1].start()
+
+        for thread in threads:
+            thread.join()
 
 
     def run(self):
