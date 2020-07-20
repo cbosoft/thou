@@ -6,6 +6,6 @@ def sighandlr(*args):
     c.stop()
 
 if __name__ == '__main__':
-    c = Crawler(['https://aol.com', 'https://ycombinator.com', 'https://stackoverflow.com/questions', 'https://reddit.com', 'https://en.wikipedia.org'])
+    c = Crawler(['https://ycombinator.com', 'https://stackoverflow.com/questions', 'https://en.wikipedia.org'])
     signal(SIGINT, sighandlr)
-    c.run_threads(5)
+    c.run_threads(3)
