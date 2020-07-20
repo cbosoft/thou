@@ -60,9 +60,9 @@ class Database:
     def search(self, *, query):
         conn = sql.connect(self.path)
         query = query.split()
-        query = '%'.join(list(sorted(query)))
+        query = '%' + '%'.join(list(sorted(query))) + '%'
         cur = conn.cursor()
-        cur.execute(f'SELECT * FROM STORE WHERE TAGS LIKE "%{query}%";')
+        cur.execute(f'SELECT * FROM STORE WHERE TAGS LIKE "{query}" OR URL LIKE "{query}" OR TEXT LIKE "{query}";')
         res = cur.fetchall()
         conn.close()
         return res
