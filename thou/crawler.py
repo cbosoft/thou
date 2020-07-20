@@ -1,7 +1,9 @@
 import re
 import queue
+import random
 from time import sleep
-from threading import Thread
+from threading import Thread, Lock
+import pickle
 
 import requests
 from bs4 import BeautifulSoup
@@ -17,22 +19,58 @@ def remove_escapes(s):
 def tags_with_href(tag):
     return tag.has_attr('href')
 
+
+class BackedUpQueue:
+
+    def __init__(self):
+        self.lock = Lock()
+        self._contents = list()
+
+    def put(self, item):
+        with self.lock:
+            l = len(self._contents)
+            i = 0 if not l else random.randint(0, l - 1)
+            self._contents.insert(i, item)
+
+    def get(self, *args, **kwargs):
+        with self.lock:
+            item = self._contents.pop(0)
+            return item
+
+    def empty(self):
+        with self.lock:
+            return len(self._contents) == 0
+
+    def save(self):
+        print('Saving state')
+        with open('thou_links.pickle', 'wb') as f:
+            with self.lock:
+                pickle.dump(self._contents, f)
+
+    def load(self):
+        with open('thou_links.pickle', 'rb') as f:
+            with self.lock:
+                self._contents = pickle.load(f)
+
 class Crawler:
     '''crawls the web for links, and storing the result in a database'''
 
     def __init__(self, seed, database_path='./thou.db'):
         self.database = Database(database_path)
-        self.urls_q = queue.Queue()
+        self.urls_q = BackedUpQueue()
 
-        if isinstance(seed, list):
-            for url in seed:
-                if not isinstance(url, str):
-                    raise TypeError('URLs are expected to be in str format.')
-                self.urls_q.put(url)
-        elif isinstance(seed, str):
-            self.urls_q.put(seed)
-        else:
-            raise TypeError('URLs are expected to be in str format.')
+        try:
+            self.urls_q.load()
+        except:
+            if isinstance(seed, list):
+                for url in seed:
+                    if not isinstance(url, str):
+                        raise TypeError('URLs are expected to be in str format.')
+                    self.urls_q.put(url)
+            elif isinstance(seed, str):
+                self.urls_q.put(seed)
+            else:
+                raise TypeError('URLs are expected to be in str format.')
 
 
     def run_threads(self, n=0):
@@ -44,17 +82,26 @@ class Crawler:
             threads.append(Thread(target=self.run))
             threads[-1].start()
 
-        for thread in threads:
-            thread.join()
+        while threads:
+            self.urls_q.save()
+            threads[0].join(timeout=10.0)
+            if not threads[0].is_alive():
+                threads.pop(0)
 
 
     def run(self):
         self.running = True
         while self.running:
+
+            if self.urls_q.empty():
+                print('No more links.')
+                return
+
             try:
                 url = self.urls_q.get(timeout=30)
                 new_links = self.scrape(url)
             except Exception as e:
+                print(str(e))
                 with open('thou_error_log.txt', 'a') as f:
                     f.write(f'{e}\n\n\n')
                 continue
@@ -65,6 +112,8 @@ class Crawler:
 
     def stop(self):
         self.running = False
+        sleep(2)
+        exit(0)
 
 
 
