@@ -21,14 +21,18 @@ class Database:
         else:
             self.init_tables()
 
+
     def init_tables(self):
         print("initialising database")
         conn = sql.connect(self.path)
         conn.execute("CREATE TABLE \"A\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT);");
         # TODO: create database scheme here
 
-    def register_link(self, link):
+
+    def register_link(self, link, meta):
+        print(link, meta)
         pass
+
 
 if __name__ == "__main__":
     d = Database("a.db")

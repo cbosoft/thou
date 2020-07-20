@@ -3,6 +3,8 @@ from collections import defaultdict
 def top_words(s, n=10):
     words = s.split()
 
+    # TODO: remove small (>=2 letter) and very common ('the', 'and', etc) words
+
     # get popularity of the words
     hist = defaultdict(int)
     for word in words:
