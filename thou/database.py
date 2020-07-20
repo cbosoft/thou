@@ -32,6 +32,8 @@ class Database:
     def init_tables(self):
         conn = sql.connect(self.path)
         conn.execute('CREATE TABLE "STORE" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "URL" TEXT NOT NULL, "TAGS" TEXT NOT NULL);');
+        conn.execute('CREATE UNIQUE INDEX uniq_url_idx ON STORE (URL);');
+        conn.commit()
         print('table created')
         conn.close()
 
