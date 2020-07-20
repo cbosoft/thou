@@ -1,5 +1,8 @@
 import os
+import re
 import sqlite3 as sql
+
+from thou.rank import rank
 
 class Database:
 
@@ -66,18 +69,29 @@ class Database:
         conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TITLE", "TAGS", "TITLENOCASE", "TAGSNOCASE", "LINKCOUNT") VALUES("{url}", "{title}", "{meta}", "{title.lower()}", "{meta.lower()}", "{link_count}");')
         conn.commit()
         conn.close()
-        print(f'{title} - {meta}')
+        print(f'({link_count}) {title[:max([60,len(title)])]}')
 
 
     def search(self, *, query):
+        query_orig = query
         conn = sql.connect(self.path)
+        query = query.lower()
         query = query.split()
         query = '%' + '%'.join(list(sorted(query))) + '%'
         cur = conn.cursor()
         cur.execute(f'SELECT * FROM STORE WHERE TAGSNOCASE LIKE "{query}" OR URL LIKE "{query}" OR TITLENOCASE LIKE "{query}";')
         results = cur.fetchall()
         conn.close()
-        return res
+
+        if not results:
+            return []
+
+        query_as_re = re.compile(query.replace('%', '.*'))
+        query_exact = re.compile(query_orig)
+        query_lower_exact = re.compile(query_orig.lower())
+        rank_and_result = [(rank(result, query_as_re, query_exact, query_lower_exact), result) for result in results]
+        ranks, results = zip(*list(reversed(sorted(rank_and_result))))
+        return results
 
 
 
