@@ -9,3 +9,4 @@ test
 obj
 **/.*.un~
 *.db
+.env
