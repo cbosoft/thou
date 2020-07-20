@@ -3,3 +3,4 @@ tags
 **/.*.un~
 *.db
 .env
+thou_error_log.txt
