@@ -44,5 +44,17 @@ class Database:
         conn.close()
 
 
+    def search(self, *, query):
+        conn = sql.connect(self.path)
+        query = query.split()
+        query = '%'.join(list(sorted(query)))
+        cur = conn.cursor()
+        cur.execute(f'SELECT URL FROM STORE WHERE TAGS LIKE "%{query}%";')
+        res = cur.fetchall()
+        conn.close()
+        return '<ul>' + '\n'.join([f'<li><a href="{r[0]}">{r[0]}</a></li>' for r in res]) + '</ul>'
+
+
+
 if __name__ == "__main__":
     d = Database("a.db")
