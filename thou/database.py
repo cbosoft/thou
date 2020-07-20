@@ -31,14 +31,14 @@ class Database:
 
     def init_tables(self):
         conn = sql.connect(self.path)
-        conn.execute("CREATE TABLE \"STORE\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"URL\" TEXT NOT NULL, \"TAGS\" TEXT NOT NULL);");
-        print("table created")
+        conn.execute('CREATE TABLE "STORE" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "URL" TEXT NOT NULL, "TAGS" TEXT NOT NULL);');
+        print('table created')
         conn.close()
 
 
     def register_link(self, url, meta):
         conn = sql.connect(self.path)
-        meta = " ".join(sorted(meta))
+        meta = ' '.join(sorted(meta))
         conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TAGS") VALUES("{url}", "{meta}");')
         conn.commit()
         conn.close()
