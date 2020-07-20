@@ -79,8 +79,8 @@ class Crawler:
         page = BeautifulSoup(resp.content, 'html.parser')
 
         # get page meta data
-        meta = self.get_meta(page)
-        self.database.register_link(url, meta)
+        text, meta = self.get_text_and_meta(page)
+        self.database.register_link(url, text, page.title.text, meta)
 
         # return links
         links = self.get_links(page, url)
@@ -99,11 +99,11 @@ class Crawler:
         return links
 
 
-    def get_meta(self, page):
-        s = page.getText()
-        s = remove_escapes(s)
-        s = top_words(s)
-        return s
+    def get_text_and_meta(self, page):
+        text = page.getText()
+        text = remove_escapes(text)
+        meta = top_words(text)
+        return text, meta
 
 
 

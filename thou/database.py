@@ -31,18 +31,27 @@ class Database:
 
     def init_tables(self):
         conn = sql.connect(self.path)
-        conn.execute('CREATE TABLE "STORE" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "URL" TEXT NOT NULL, "TAGS" TEXT NOT NULL);');
+        conn.execute('''CREATE TABLE "STORE" (
+                "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                "URL" TEXT NOT NULL,
+                "TEXT" TEXT NOT NULL,
+                "TITLE" TEXT NOT NULL,
+                "TAGS" TEXT NOT NULL
+                );''');
         conn.execute('CREATE UNIQUE INDEX uniq_url_idx ON STORE (URL);');
         conn.commit()
         print('table created')
         conn.close()
 
 
-    def register_link(self, url, meta):
+    def register_link(self, url, text, title, meta):
         conn = sql.connect(self.path)
         meta = ' '.join(sorted(meta))
         meta = meta.replace('"', '')
-        conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TAGS") VALUES("{url}", "{meta}");')
+        text = text.replace('"', '""')
+        text = '\n'.join([line for line in text.split('\n') if line])
+        title = title.replace('"', '""')
+        conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TEXT", "TITLE", "TAGS") VALUES("{url}", "{text}", "{title}", "{meta}");')
         conn.commit()
         conn.close()
 
