@@ -4,3 +4,4 @@ tags
 *.db
 .env
 thou_error_log.txt
+*.pickle
