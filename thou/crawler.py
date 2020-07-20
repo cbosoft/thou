@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 
 from thou.database import Database
 from thou.words import top_words
+from thou.colours import FG_GREEN, FG_YELLOW, FG_RED, RESET
 
 ANSI_ESCAPE_RE = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
 
@@ -42,7 +43,7 @@ class BackedUpQueue:
             return len(self._contents) == 0
 
     def save(self):
-        print('Saving state')
+        print(f'{FG_GREEN}Saving state{RESET}')
         with open('thou_links.pickle', 'wb') as f:
             with self.lock:
                 pickle.dump(self._contents, f)
@@ -89,7 +90,7 @@ class Crawler:
                 threads.pop(0)
 
 
-    def run(self):
+    def run(self, wait_on_fail=10):
         self.running = True
         while self.running:
 
@@ -101,7 +102,7 @@ class Crawler:
                 url = self.urls_q.get(timeout=30)
                 new_links = self.scrape(url)
             except Exception as e:
-                print(str(e))
+                print(f'{FG_RED}Encountered error: {e}{RESET}')
                 with open('thou_error_log.txt', 'a') as f:
                     f.write(f'{e}\n\n\n')
                 continue
