@@ -61,10 +61,10 @@ class Database:
         query = query.split()
         query = '%'.join(list(sorted(query)))
         cur = conn.cursor()
-        cur.execute(f'SELECT URL FROM STORE WHERE TAGS LIKE "%{query}%";')
+        cur.execute(f'SELECT * FROM STORE WHERE TAGS LIKE "%{query}%";')
         res = cur.fetchall()
         conn.close()
-        return '<ul>' + '\n'.join([f'<li><a href="{r[0]}">{r[0]}</a></li>' for r in res]) + '</ul>'
+        return res
 
 
 

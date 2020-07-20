@@ -1,7 +1,7 @@
 import http.server
 import urllib.parse
 
-from thou.pages import index, results
+from thou.pages import index_page, results_page, format_results
 from thou.database import Database
 
 database = 0
@@ -16,12 +16,14 @@ class ServerHandler(http.server.SimpleHTTPRequestHandler):
             query_dict = {k:v for k,v in zip(query_data[:-1], query_data[1:])}
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(results.as_bytes(results=database.search(**query_dict)))
+            results = database.search(**query_dict)
+            formatted_results = format_results(results)
+            self.wfile.write(results_page.as_bytes(results=formatted_results))
 
         else:
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(index.as_bytes())
+            self.wfile.write(index_page.as_bytes())
 
 def run(db_path):
     global database
