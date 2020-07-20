@@ -141,6 +141,7 @@ class Crawler:
             title = page.title
             if title:
                 title = title.text
+                title = title.replace('\n', '')
             else:
                 title = url
             self.database.register_link(url, text, title, meta)
