@@ -7,7 +7,5 @@ thou_crawler
 thou_server
 test
 obj
-analysis.txt
-d.dot
-*/.*.un~
-resed
+**/.*.un~
+*.db
