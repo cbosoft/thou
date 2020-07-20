@@ -49,7 +49,7 @@ results_page = HTMLPage('''
         </HTML>''')
 
 
-def format_result(idx, url, text, title, tags):
+def format_result(idx, url, title, tags):
     #lines = text.split('\n')
     #lines = lines[:min([10, len(lines)])]
     #text = '\n'.join(lines)
@@ -57,18 +57,18 @@ def format_result(idx, url, text, title, tags):
     return (f'<div style="padding: 5px; order: {2*(idx+1)};">{idx+1}: <a href="{url}">{title}</a><span style="font-size: small; color: gray; padding: 5px;">{url}</span></div>'+
             f'<div style="order: {2*(idx+1) + 1}; color: gray;">{tags}</div>')
 
-def format_results(results, max=30):
+def format_results(results, *, time_taken, max=30):
 
     rv = ''
     l = len(results)
     if 0 < l <= max:
-        rv += f'<div style="order: 0; color: gray;">{len(results)} results returned.</div>'
+        rv += f'<div style="order: 0; color: gray;">{len(results)} results returned in {time_taken}.</div>'
     elif l > max:
-        rv += f'<div style="order: 0; color: black;">{len(results)} results returned; showing top {max}</div>'
+        rv += f'<div style="order: 0; color: black;">{len(results)} results returned in {time_taken}; showing top {max}</div>'
         results = results[:max]
     else:
-        rv += f'<div style="order: 0; color: red; font-weight: bold;">No results returned.</div>'
+        rv += f'<div style="order: 0; color: red; font-weight: bold;">No results returned ({time_taken}).</div>'
 
-    for idx, (__, url, text, title, tags) in enumerate(results):
-        rv += format_result(idx, url, text, title, tags)
+    for idx, (__, url, title, tags, __, __, __) in enumerate(results):
+        rv += format_result(idx, url, title, tags)
     return rv
