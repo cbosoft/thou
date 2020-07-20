@@ -95,7 +95,9 @@ class Crawler:
         while self.running:
 
             if self.urls_q.empty():
-                print('No more links.')
+                print(f'{FG_YELLOW}No links: waiting {wait_on_fail}s and trying again.{RESET}')
+                sleep(wait_on_fail)
+                print(f'{FG_RED}No links! Stopping.{RESET}')
                 return
 
             try:
