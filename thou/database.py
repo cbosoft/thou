@@ -54,7 +54,7 @@ class Database:
         conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TEXT", "TITLE", "TAGS") VALUES("{url}", "{text}", "{title}", "{meta}");')
         conn.commit()
         conn.close()
-        print(f'{title} - {meta}'
+        print(f'{title} - {meta}')
 
 
     def search(self, *, query):
