@@ -33,10 +33,12 @@ class Database:
         conn = sql.connect(self.path)
         conn.execute('''CREATE TABLE "STORE" (
                 "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                "URL" TEXT NOT NULL,
-                "TEXT" TEXT NOT NULL,
+                "URL" TEXT NOT NULL UNIQUE,
                 "TITLE" TEXT NOT NULL,
-                "TAGS" TEXT NOT NULL
+                "TAGS" TEXT NOT NULL,
+                "TITLENOCASE" TEXT NOT NULL,
+                "TAGSNOCASE" TEXT NOT NULL,
+                "LINKCOUNT" NUMBER NOT NULL
                 );''');
         conn.execute('CREATE UNIQUE INDEX uniq_url_idx ON STORE (URL);');
         conn.commit()
@@ -45,13 +47,23 @@ class Database:
 
 
     def register_link(self, url, text, title, meta):
-        conn = sql.connect(self.path)
+        url = url.lower()
+
         meta = ' '.join(sorted(meta))
         meta = meta.replace('"', '')
         text = text.replace('"', '""')
         text = '\n'.join([line for line in text.split('\n') if line])
         title = title.replace('"', '""')
-        conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TEXT", "TITLE", "TAGS") VALUES("{url}", "{text}", "{title}", "{meta}");')
+
+        conn = sql.connect(self.path)
+        cur = conn.cursor()
+        cur.execute(f'SELECT LINKCOUNT FROM STORE WHERE URL="{url}";')
+        res = cur.fetchall()
+        link_count = 1
+        if res:
+            link_count += int(res[0][0])
+
+        conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TITLE", "TAGS", "TITLENOCASE", "TAGSNOCASE", "LINKCOUNT") VALUES("{url}", "{title}", "{meta}", "{title.lower()}", "{meta.lower()}", "{link_count}");')
         conn.commit()
         conn.close()
         print(f'{title} - {meta}')
@@ -62,8 +74,8 @@ class Database:
         query = query.split()
         query = '%' + '%'.join(list(sorted(query))) + '%'
         cur = conn.cursor()
-        cur.execute(f'SELECT * FROM STORE WHERE TAGS LIKE "{query}" OR URL LIKE "{query}" OR TEXT LIKE "{query}";')
-        res = cur.fetchall()
+        cur.execute(f'SELECT * FROM STORE WHERE TAGSNOCASE LIKE "{query}" OR URL LIKE "{query}" OR TITLENOCASE LIKE "{query}";')
+        results = cur.fetchall()
         conn.close()
         return res
 
