@@ -39,8 +39,8 @@ class Database:
     def register_link(self, url, meta):
         conn = sql.connect(self.path)
         meta = " ".join(sorted(meta))
-        print(url, meta)
-        conn.execute(f"INSERT OR REPLACE INTO STORE(\"URL\", \"TAGS\") VALUES(\"{url}\", \"{meta}\")")
+        conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TAGS") VALUES("{url}", "{meta}");')
+        conn.commit()
         conn.close()
 
 
