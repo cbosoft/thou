@@ -80,12 +80,13 @@ class Crawler:
 
         # get page meta data
         text, meta = self.get_text_and_meta(page)
-        title = page.title
-        if title:
-            title = title.text
-        else:
-            title = url
-        self.database.register_link(url, text, title, meta)
+        if meta:
+            title = page.title
+            if title:
+                title = title.text
+            else:
+                title = url
+            self.database.register_link(url, text, title, meta)
 
         # return links
         links = self.get_links(page, url)

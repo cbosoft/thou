@@ -19,6 +19,9 @@ def top_words(s, n=10):
     for word in words:
         hist[word] += 1
 
+    if not hist:
+        return []
+
     # sort words by most common
     hist_values = list(hist.items())
     hist_values = list(reversed(sorted(hist_values, key=lambda v: v[1])))
