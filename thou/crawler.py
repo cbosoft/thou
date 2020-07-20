@@ -49,12 +49,18 @@ class Crawler:
 
 
     def run(self):
-        while True:
-            url = self.urls_q.get()
+        self.running = True
+        while self.running:
+            url = self.urls_q.get(timeout=30)
             new_links = self.scrape(url)
             sleep(0.1)
             for link in new_links:
                 self.urls_q.put(link)
+
+
+    def stop(self):
+        self.running = False
+
 
 
     def scrape(self, url):
