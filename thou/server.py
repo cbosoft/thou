@@ -11,7 +11,7 @@ class ServerHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith('/search?'):
             query_string = self.path.split('?', 1)[1]
-            query_string = urllib.parse.unquote(query_string)
+            query_string = urllib.parse.unquote_plus(query_string)
             query_data = query_string.split('=')
             query_dict = {k:v for k,v in zip(query_data[:-1], query_data[1:])}
             self.send_response(200)
