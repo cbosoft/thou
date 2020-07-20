@@ -51,8 +51,13 @@ class Crawler:
     def run(self):
         self.running = True
         while self.running:
-            url = self.urls_q.get(timeout=30)
-            new_links = self.scrape(url)
+            try:
+                url = self.urls_q.get(timeout=30)
+                new_links = self.scrape(url)
+            except Exception as e:
+                with open('thou_error_log.txt', 'a') as f:
+                    f.write(f'{e}\n\n\n')
+                continue
             sleep(0.1)
             for link in new_links:
                 self.urls_q.put(link)
