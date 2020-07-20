@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-from thou.server import Server
+from thou.server import run
 
 
 if __name__ == '__main__':
-    s = Server()
-    s.run()
+    run('./thou.db')
