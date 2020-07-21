@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 from thou.database import Database
 from thou.words import top_words
-from thou.colours import FG_GREEN, FG_YELLOW, FG_RED, RESET
+from thou.colours import BOLD, FG_GREEN, FG_YELLOW, FG_RED, RESET
 from thou.backed_up_queue import BackedUpQueue
 from thou.util import remove_escapes
 from thou.page import Page
@@ -35,13 +35,22 @@ class Crawler:
                 raise TypeError('URLs are expected to be in str format.')
 
 
-    def run_threads(self, n=0, **kwargs):
+    def startup_splash(self, n):
+        print(f'Crawler starting with {n} threads.')
+        sleep(2)
 
-        self.running = True
+
+    def run(self, n=1, **kwargs):
+
+        if n <= 1:
+            self.run(**kwargs)
+            return
+
+        self.startup_splash(n)
 
         threads = list()
         for i in range(n):
-            threads.append(Thread(target=self.run, kwargs=kwargs))
+            threads.append(Thread(target=self._run, kwargs=kwargs))
             threads[-1].start()
 
         while threads:
@@ -51,7 +60,7 @@ class Crawler:
                 threads.pop(0)
 
 
-    def run(self, wait_on_fail=10, wait_forever=True, **kwargs):
+    def _run(self, wait_on_fail=10, wait_forever=True, **kwargs):
         self.running = True
         while self.running:
 

@@ -8,4 +8,4 @@ def sighandlr(*args):
 if __name__ == '__main__':
     c = Crawler(['https://ycombinator.com', 'https://stackoverflow.com/questions', 'https://en.wikipedia.org'])
     signal(SIGINT, sighandlr)
-    c.run_threads(3)
+    c.run(3)
