@@ -15,10 +15,11 @@ class Page:
 
     def __init__(self, url):
         self.url = url.lower()
+        self.soup = self.get_soup()
 
 
-    @cached_property
-    def soup(self):
+
+    def get_soup(self):
         resp = requests.get(self.url)
         if not resp:
             raise Exception(f'Failed to perform get of {self.url}')
