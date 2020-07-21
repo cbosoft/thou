@@ -2,8 +2,8 @@ import os
 import re
 import sqlite3 as sql
 
-from thou.rank import rank
 from thou.util import first_n_chars, sql_friendly
+from thou.result import Result
 
 
 class Database:
@@ -71,18 +71,13 @@ class Database:
         query = '%' + '%'.join(list(sorted(query))) + '%'
         cur = conn.cursor()
         cur.execute(f'SELECT * FROM STORE WHERE LOWER(TAGS) LIKE "{query}" OR URL LIKE "{query}" OR LOWER(TITLE) LIKE "{query}";')
-        results = cur.fetchall()
+        rows = cur.fetchall()
         conn.close()
 
-        if not results:
+        if not rows:
             return []
 
-        query_as_re = re.compile(query.replace('%', '.*'))
-        query_exact = re.compile(query_orig)
-        query_lower_exact = re.compile(query_orig.lower())
-        rank_and_result = [(rank(result, query_as_re, query_exact, query_lower_exact), result) for result in results]
-        ranks, results = zip(*list(reversed(sorted(rank_and_result))))
-        return results
+        return sorted(Result(*columns, query) for columns in rows)
 
 
     def get_link_count(self, page):

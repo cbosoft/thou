@@ -70,13 +70,10 @@ results_page = HTMLPage('''
         </HTML>''')
 
 
-def format_result(idx, url, title, tags):
-    #lines = text.split('\n')
-    #lines = lines[:min([10, len(lines)])]
-    #text = '\n'.join(lines)
+def format_result(idx, result):
+    return (f'<div style="padding: 5px; order: {2*(idx+1)};">{idx+1}: <a href="{result.url}">{result.title}</a><span style="font-size: small; color: gray; padding: 5px;">{result.url}</span></div>'+
+            f'<div style="order: {2*(idx+1) + 1}; color: gray;">{result.tags}</div>')
 
-    return (f'<div style="padding: 5px; order: {2*(idx+1)};">{idx+1}: <a href="{url}">{title}</a><span style="font-size: small; color: gray; padding: 5px;">{url}</span></div>'+
-            f'<div style="order: {2*(idx+1) + 1}; color: gray;">{tags}</div>')
 
 def format_results(results, *, time_taken, query, max=30):
 
@@ -90,6 +87,6 @@ def format_results(results, *, time_taken, query, max=30):
     else:
         rv += f'<div style="order: 0; color: red; font-weight: bold;">No results returned for "{query}" ({time_taken}).</div>'
 
-    for idx, (__, url, title, tags, __) in enumerate(results):
-        rv += format_result(idx, url, title, tags)
+    for idx, result in enumerate(results):
+        rv += format_result(idx, result)
     return rv
