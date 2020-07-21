@@ -90,6 +90,6 @@ def format_results(results, *, time_taken, query, max=30):
     else:
         rv += f'<div style="order: 0; color: red; font-weight: bold;">No results returned for "{query}" ({time_taken}).</div>'
 
-    for idx, (__, url, title, tags, __, __, __) in enumerate(results):
+    for idx, (__, url, title, tags, __) in enumerate(results):
         rv += format_result(idx, url, title, tags)
     return rv

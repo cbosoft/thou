@@ -43,8 +43,6 @@ class Database:
                 "URL" TEXT NOT NULL UNIQUE,
                 "TITLE" TEXT NOT NULL,
                 "TAGS" TEXT NOT NULL,
-                "TITLENOCASE" TEXT NOT NULL,
-                "TAGSNOCASE" TEXT NOT NULL,
                 "LINKCOUNT" NUMBER NOT NULL
                 );''');
         conn.execute('CREATE UNIQUE INDEX uniq_url_idx ON STORE (URL);');
@@ -70,7 +68,7 @@ class Database:
         if res:
             link_count += int(res[0][0])
 
-        conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TITLE", "TAGS", "TITLENOCASE", "TAGSNOCASE", "LINKCOUNT") VALUES("{url}", "{title}", "{meta}", "{title.lower()}", "{meta.lower()}", "{link_count}");')
+        conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TITLE", "TAGS", "LINKCOUNT") VALUES("{url}", "{title}", "{meta}", "{link_count}");')
         conn.commit()
         conn.close()
         print(f'({link_count}) {first_n_chars(url, 30)} {first_n_chars(title, 50)}')
@@ -83,7 +81,7 @@ class Database:
         query = query.split()
         query = '%' + '%'.join(list(sorted(query))) + '%'
         cur = conn.cursor()
-        cur.execute(f'SELECT * FROM STORE WHERE TAGSNOCASE LIKE "{query}" OR URL LIKE "{query}" OR TITLENOCASE LIKE "{query}";')
+        cur.execute(f'SELECT * FROM STORE WHERE LOWER(TAGS) LIKE "{query}" OR URL LIKE "{query}" OR LOWER(TITLE) LIKE "{query}";')
         results = cur.fetchall()
         conn.close()
 
