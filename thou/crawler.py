@@ -38,13 +38,13 @@ class Crawler:
                 raise TypeError('URLs are expected to be in str format.')
 
 
-    def run_threads(self, n=0):
+    def run_threads(self, n=0, **kwargs):
 
         self.running = True
 
         threads = list()
         for i in range(n):
-            threads.append(Thread(target=self.run))
+            threads.append(Thread(target=self.run, kwargs=kwargs))
             threads[-1].start()
 
         while threads:
