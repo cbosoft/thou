@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 
 from thou.util import remove_escapes
 from thou.words import top_words
+from thou.exception import DocTypeError
 
 
 def tags_with_href(tag):
