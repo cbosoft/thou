@@ -30,7 +30,7 @@ class Page:
         except KeyError:
             pass
 
-        return BeautifulSoup(resp.content, 'html.parser')
+        return BeautifulSoup(resp.content, 'html.parser', from_encoding=resp.apparent_encoding)
 
 
     @cached_property
