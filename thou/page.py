@@ -26,7 +26,7 @@ class Page:
         try:
             content_type = resp.headers['content-type']
             if not content_type.startswith('text/html'):
-                return
+                Exception(f'Document not html')
         except KeyError:
             pass
 
