@@ -73,7 +73,7 @@ class Database:
         conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TITLE", "TAGS", "TITLENOCASE", "TAGSNOCASE", "LINKCOUNT") VALUES("{url}", "{title}", "{meta}", "{title.lower()}", "{meta.lower()}", "{link_count}");')
         conn.commit()
         conn.close()
-        print(f'({link_count}) {title[:max([60,len(title)])]}')
+        print(f'({link_count}) {first_n_chars(url, 30)} {first_n_chars(title, 50)}')
 
 
     def search(self, *, query):
