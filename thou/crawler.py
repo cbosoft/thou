@@ -1,9 +1,7 @@
 import re
-import queue
 import random
 from time import sleep
 from threading import Thread, Lock
-import pickle
 
 import requests
 from bs4 import BeautifulSoup
@@ -11,6 +9,7 @@ from bs4 import BeautifulSoup
 from thou.database import Database
 from thou.words import top_words
 from thou.colours import FG_GREEN, FG_YELLOW, FG_RED, RESET
+from thou.backed_up_queue import BackedUpQueue
 
 ANSI_ESCAPE_RE = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
 
@@ -19,39 +18,6 @@ def remove_escapes(s):
 
 def tags_with_href(tag):
     return tag.has_attr('href')
-
-
-class BackedUpQueue:
-
-    def __init__(self):
-        self.lock = Lock()
-        self._contents = list()
-
-    def put(self, item):
-        with self.lock:
-            l = len(self._contents)
-            i = 0 if not l else random.randint(0, l - 1)
-            self._contents.insert(i, item)
-
-    def get(self, *args, **kwargs):
-        with self.lock:
-            item = self._contents.pop(0)
-            return item
-
-    def empty(self):
-        with self.lock:
-            return len(self._contents) == 0
-
-    def save(self):
-        print(f'{FG_GREEN}Saving state{RESET}')
-        with open('thou_links.pickle', 'wb') as f:
-            with self.lock:
-                pickle.dump(self._contents, f)
-
-    def load(self):
-        with open('thou_links.pickle', 'rb') as f:
-            with self.lock:
-                self._contents = pickle.load(f)
 
 class Crawler:
     '''crawls the web for links, and storing the result in a database'''
@@ -168,6 +134,3 @@ class Crawler:
         text = remove_escapes(text)
         meta = top_words(text)
         return text, meta
-
-
-
