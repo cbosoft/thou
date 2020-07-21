@@ -54,13 +54,17 @@ class Crawler:
                 threads.pop(0)
 
 
-    def run(self, wait_on_fail=10):
+    def run(self, wait_on_fail=10, wait_forever=True):
         self.running = True
         while self.running:
 
-            if self.urls_q.empty():
+            while self.urls_q.empty():
                 print(f'{FG_YELLOW}No links: waiting {wait_on_fail}s and trying again.{RESET}')
                 sleep(wait_on_fail)
+                if not wait_forever:
+                    break
+
+            if self.urls_q.empty():
                 print(f'{FG_RED}No links! Stopping.{RESET}')
                 return
 
