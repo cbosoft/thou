@@ -57,14 +57,9 @@ class Database:
         text = text.replace('"', '""')
         text = '\n'.join([line for line in text.split('\n') if line])
         title = title.replace('"', '""')
+        link_count = self.get_link_count(page)
 
         conn = sql.connect(self.path)
-        cur = conn.cursor()
-        cur.execute(f'SELECT LINKCOUNT FROM STORE WHERE URL="{url}";')
-        res = cur.fetchall()
-        link_count = 1
-        if res:
-            link_count += int(res[0][0])
 
         conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TITLE", "TAGS", "LINKCOUNT") VALUES("{url}", "{title}", "{meta}", "{link_count}");')
         conn.commit()
@@ -92,6 +87,18 @@ class Database:
         rank_and_result = [(rank(result, query_as_re, query_exact, query_lower_exact), result) for result in results]
         ranks, results = zip(*list(reversed(sorted(rank_and_result))))
         return results
+
+
+    def get_link_count(self, page):
+        conn = sql.connect(self.path)
+        cur = conn.cursor()
+        cur.execute(f'SELECT LINKCOUNT FROM STORE WHERE URL="{page.url}";')
+        res = cur.fetchall()
+        link_count = 1
+        if res:
+            link_count += int(res[0][0])
+        conn.close()
+        return link_count
 
 
 
