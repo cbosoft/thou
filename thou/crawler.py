@@ -11,10 +11,7 @@ from thou.words import top_words
 from thou.colours import FG_GREEN, FG_YELLOW, FG_RED, RESET
 from thou.backed_up_queue import BackedUpQueue
 from thou.util import remove_escapes
-
-
-def tags_with_href(tag):
-    return tag.has_attr('href')
+from thou.page import Page
 
 
 class Crawler:
@@ -54,7 +51,7 @@ class Crawler:
                 threads.pop(0)
 
 
-    def run(self, wait_on_fail=10, wait_forever=True):
+    def run(self, wait_on_fail=10, wait_forever=True, **kwargs):
         self.running = True
         while self.running:
 
@@ -70,14 +67,17 @@ class Crawler:
 
             try:
                 url = self.urls_q.get(timeout=30)
-                new_links = self.scrape(url)
+                page = Page(url, **kwargs)
             except Exception as e:
                 print(f'{FG_RED}Encountered error: {e}{RESET}')
                 with open('thou_error_log.txt', 'a') as f:
                     f.write(f'{e}\n\n\n')
                 continue
+
+            self.database.store(page)
+
             sleep(0.1)
-            for link in new_links:
+            for link in page.links:
                 self.urls_q.put(link)
 
 
@@ -85,54 +85,3 @@ class Crawler:
         self.running = False
         sleep(2)
         exit(0)
-
-
-
-    def scrape(self, url):
-        resp = requests.get(url)
-        if not resp:
-            return []
-
-        try:
-            content_type = resp.headers['content-type']
-            if not content_type.startswith('text/html'):
-                return []
-        except KeyError:
-            pass
-
-        # download page
-        page = BeautifulSoup(resp.content, 'html.parser')
-
-        # get page meta data
-        text, meta = self.get_text_and_meta(page)
-        if meta:
-            title = page.title
-            if title:
-                title = title.text
-                title = title.replace('\n', '')
-            else:
-                title = url
-            self.database.register_link(url, text, title, meta)
-
-        # return links
-        links = self.get_links(page, url)
-        return links
-
-
-    def get_links(self, page, url):
-        '''given page, return list of links on page'''
-        links = list()
-        for tag in page.findAll(tags_with_href):
-            link = tag.get('href')
-            if not link.startswith('http'):
-                link = url+'/'+link
-
-            links.append(link)
-        return links
-
-
-    def get_text_and_meta(self, page):
-        text = page.getText()
-        text = remove_escapes(text)
-        meta = top_words(text)
-        return text, meta

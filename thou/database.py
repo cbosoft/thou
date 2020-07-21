@@ -3,7 +3,7 @@ import re
 import sqlite3 as sql
 
 from thou.rank import rank
-from thou.util import first_n_chars
+from thou.util import first_n_chars, sql_friendly
 
 
 class Database:
@@ -49,22 +49,18 @@ class Database:
         conn.close()
 
 
-    def register_link(self, url, text, title, meta):
-        url = url.lower()
+    def store(self, page):
+        meta = sql_friendly(page.tags_as_string())
+        title = sql_friendly(page.title)
 
-        meta = ' '.join(sorted(meta))
-        meta = meta.replace('"', '')
-        text = text.replace('"', '""')
-        text = '\n'.join([line for line in text.split('\n') if line])
-        title = title.replace('"', '""')
         link_count = self.get_link_count(page)
 
         conn = sql.connect(self.path)
-
-        conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TITLE", "TAGS", "LINKCOUNT") VALUES("{url}", "{title}", "{meta}", "{link_count}");')
+        conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TITLE", "TAGS", "LINKCOUNT") '+
+                'VALUES("{page.url}", "{title}", "{meta}", "{link_count}");')
         conn.commit()
         conn.close()
-        print(f'({link_count}) {first_n_chars(url, 30)} {first_n_chars(title, 50)}')
+        print(f'({link_count}) {first_n_chars(page.url, 30)} {first_n_chars(title, 50)}')
 
 
     def search(self, *, query):
