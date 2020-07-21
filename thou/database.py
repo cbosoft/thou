@@ -57,7 +57,7 @@ class Database:
 
         conn = sql.connect(self.path)
         conn.execute(f'INSERT OR REPLACE INTO "STORE" ("URL", "TITLE", "TAGS", "LINKCOUNT") '+
-                'VALUES("{page.url}", "{title}", "{meta}", "{link_count}");')
+                f'VALUES("{page.url}", "{title}", "{meta}", "{link_count}");')
         conn.commit()
         conn.close()
         print(f'({link_count}) {first_n_chars(page.url, 30)} {first_n_chars(title, 50)}')
