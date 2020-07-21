@@ -18,7 +18,6 @@ class Page:
         self.soup = self.get_soup()
 
 
-
     def get_soup(self):
         resp = requests.get(self.url)
         if not resp:
@@ -27,7 +26,7 @@ class Page:
         try:
             content_type = resp.headers['content-type']
             if not content_type.startswith('text/html'):
-                Exception(f'Document not html')
+                raise DocTypeError(f'Document not html')
         except KeyError:
             pass
 
