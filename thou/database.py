@@ -4,6 +4,10 @@ import sqlite3 as sql
 
 from thou.rank import rank
 
+def first_n_chars(s, n):
+    l = len(s)
+    return s[:min([l, n])]
+
 class Database:
 
     def __init__(self, path):
