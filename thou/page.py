@@ -21,8 +21,7 @@ class Page:
 
     def get_soup(self):
         resp = requests.get(self.url)
-        if not resp:
-            raise Exception(f'Failed to perform get of {self.url}')
+        resp.raise_for_status()
 
         try:
             content_type = resp.headers['content-type']
