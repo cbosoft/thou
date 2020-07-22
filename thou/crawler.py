@@ -43,7 +43,7 @@ class Crawler:
     def run(self, n=1, **kwargs):
 
         if n <= 1:
-            self.run(**kwargs)
+            self._run(**kwargs)
             return
 
         self.startup_splash(n)
