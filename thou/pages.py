@@ -22,7 +22,7 @@ class HTMLPage:
         font-family: sans-serif;
       }
       body, html {
-        height: 100%;
+        height: 95%;
         min-height: 300px;
       }
       a {
@@ -43,9 +43,19 @@ class HTMLPage:
         font-size: 4vmax;
         font-weight: bold;
         text-align: center;
+        font-style: italic;
       }
       #searchbutton {
-        text-size: large;
+        font-size: large;
+        border: none;
+        background-color: white;
+        color: black;
+      }
+      #searchbutton:hover {
+        color: gray;
+      }
+      #searchbutton:onclick {
+        color: black;
       }
       #link {
         color: black;
@@ -57,7 +67,7 @@ class HTMLPage:
       }
       #tags {
         color: gray;
-        text-size: small;
+        font-size: small;
       }
       #result {
         margin-top: 5px;
@@ -69,7 +79,7 @@ class HTMLPage:
     def __init__(self, body, title='thou', extra_head=''):
         self.title = title
         self.body = body
-        self.extra_head = ''
+        self.extra_head = extra_head
 
     def as_string(self, **kwargs):
         draft_string = self.proto.format(
@@ -94,35 +104,29 @@ index_page = HTMLPage('''
                 <input type="text" id="query" name="query">
                 <input type="submit" id="searchbutton" value="Search!">
               </form>
-            </div>''',
+            </div>
+            <span id="message">{message}</span>
+            ''',
             extra_head='''
             <style>
             * {
-              text-size: 4vmax;
+              font-size: 4vmax;
+            }
+            #searchbutton {
+              font-size: 4vmax;
             }
             #title {
-              text-size: 10vmax;
+              font-size: 10vmax;
             }
             </style>
             ''')
 
-index_with_message_page = HTMLPage('''
-            <div id="container">
-              <span id="title">thou</span>
-              <br>
-              <form action="/search">
-                <input type="text" id="query" name="query">
-                <input type="submit" id="searchbutton" value="Search!">
-              </form>
-              <span id="title">{message></span>}
-            </div>''')
-
 results_page = HTMLPage('''
             <div id="justifyish">
               <form action="/search">
-                <a href="/home" style="color: black; text-decoration: none; font-weight: bold;">thou</a>
-                <input type="text" id="query" name="query">
-                <input type="submit" id="searchbutton" value="Search!">
+                <a href="/home" style="color: black; font-size: 2vmax;" id="title">thou</a>
+                &nbsp&nbsp<input type="text" id="query" name="query" style="font-size: 2vmax;">
+                <input type="submit" id="searchbutton" value="Search!" style="font-size: 2vmax;">
               </form><br>
               {results}
             </div>''')

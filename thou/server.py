@@ -3,7 +3,7 @@ import http.server
 import urllib.parse
 import math
 
-from thou.pages import index_page, index_with_message_page, results_page, format_results
+from thou.pages import index_page, results_page, format_results
 from thou.database import Database
 
 database = 0
@@ -37,7 +37,7 @@ class ServerHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
 
             if not query_dict['query']:
-                self.wfile.write(index_with_message_page.as_bytes(message='No query supplied: you need to supply a search query.'))
+                self.wfile.write(index_page.as_bytes(message='No query supplied: you need to supply a search query.'))
             else:
                 results = database.search(**query_dict)
                 dt = time.time() - before
