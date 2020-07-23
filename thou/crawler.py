@@ -85,7 +85,7 @@ class Crawler:
 
             self.database.store(page)
 
-            sleep(0.1)
+            sleep(1)
             for link in page.links:
                 self.urls_q.put(link)
 
