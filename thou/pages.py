@@ -1,78 +1,142 @@
+from string import Formatter
+
+
 class HTMLPage:
 
-    def __init__(self, proto):
-        self.proto = proto
+    proto = '''
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{title}</title>
+    <style>{style}
+    </style>
+    {extra_head}
+  </head>
+  <body>
+    {body}
+  </body>
+</html>
+'''
+    style = '''
+      * {
+        font-family: sans-serif;
+      }
+      body, html {
+        height: 100%;
+        min-height: 300px;
+      }
+      a {
+        text-decoration: none;
+      }
+      #container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        flex-direction: column;
+      }
+      #justifyish {
+        margin: auto;
+        width: 80%;
+      }
+      #title {
+        font-size: 4vmax;
+        font-weight: bold;
+        text-align: center;
+      }
+      #searchbutton {
+        text-size: large;
+      }
+      #link {
+        color: black;
+        font-weight: bold;
+      }
+      #url {
+        color: gray;
+        font-weight: bold;
+      }
+      #tags {
+        color: gray;
+        text-size: small;
+      }
+      #result {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        border-bottom: 1px solid gray;
+      }
+'''
+
+    def __init__(self, body, title='thou', extra_head=''):
+        self.title = title
+        self.body = body
+        self.extra_head = ''
+
+    def as_string(self, **kwargs):
+        draft_string = self.proto.format(
+                title=self.title,
+                style='{style}',
+                extra_head='{extra_head}',
+                body=self.body)
+        desired_keys = {sv[1]:'' for sv in Formatter().parse(draft_string) if sv[1] is not None}
+        kwargs = {**desired_keys, 'style': self.style, 'extra_head':self.extra_head, **kwargs}
+        return draft_string.format(**kwargs)
 
     def as_bytes(self, **kwargs):
-        s = self.proto.format(**kwargs)
+        s = self.as_string(**kwargs)
         return s.encode()
 
 
 index_page = HTMLPage('''
-        <HTML>
-          <HEAD>
-            <TITLE>thou</TITLE>
-            <style>
-              * {{ font-family: Arial, Helvetica, sans-serif; }}
-            </style>
-          </HEAD>
-          <BODY>
-            <DIV style="display: flex; justify-content: center; align-items: center; height: 100%; flex-direction: column;">
-              <span style="font-size: large; font-weight: bold; text-align: center;">thou</span>
+            <div id="container">
+              <span id="title">thou</span>
               <br>
-              <FORM action="/search" style="order: 1">
+              <form action="/search">
                 <input type="text" id="query" name="query">
-                <input type="submit" value="Search!">
-              </FORM>
-            </DIV>
-          <BODY>
-        </HTML>''')
+                <input type="submit" id="searchbutton" value="Search!">
+              </form>
+            </div>''',
+            extra_head='''
+            <style>
+            * {
+              text-size: 4vmax;
+            }
+            #title {
+              text-size: 10vmax;
+            }
+            </style>
+            ''')
 
 index_with_message_page = HTMLPage('''
-        <HTML>
-          <HEAD>
-            <TITLE>thou</TITLE>
-            <style>
-              * {{ font-family: Arial, Helvetica, sans-serif; }}
-            </style>
-          </HEAD>
-          <BODY>
-            <DIV style="display: flex; justify-content: center; align-items: center; height: 100%; flex-direction: column;">
-              <span style="font-size: large; font-weight: bold; text-align: center;">thou</span>
+            <div id="container">
+              <span id="title">thou</span>
               <br>
-              <FORM action="/search" style="order: 1">
+              <form action="/search">
                 <input type="text" id="query" name="query">
-                <input type="submit" value="Search!">
-              </FORM>
-              <span style="font-weight: bold; order 10;">{message}</span>
-            </DIV>
-          <BODY>
-        </HTML>''')
+                <input type="submit" id="searchbutton" value="Search!">
+              </form>
+              <span id="title">{message></span>}
+            </div>''')
 
 results_page = HTMLPage('''
-        <HTML>
-          <HEAD>
-            <TITLE>thou</TITLE>
-            <style>
-              * {{ font-family: Arial, Helvetica, sans-serif; }}
-            </style>
-          </HEAD>
-          <BODY>
-            <DIV style="margin: auto; width: 80%; min-width: 300px;">
-              <FORM action="/search" style="order: 1">
+            <div id="justifyish">
+              <form action="/search">
                 <a href="/home" style="color: black; text-decoration: none; font-weight: bold;">thou</a>
                 <input type="text" id="query" name="query">
-                <input type="submit" value="Search!">
-              </FORM><br>
+                <input type="submit" id="searchbutton" value="Search!">
+              </form><br>
               {results}
-            </DIV>
-          <BODY>
-        </HTML>''')
+            </div>''')
 
 
 def format_result(idx, result):
-    return (f'<div style="padding: 5px; order: {2*(idx+1)};">{idx+1}: <a href="{result.url}">{result.title}</a><span style="font-size: small; color: gray; padding: 5px;">{result.url}</span></div>'+
-            f'<div style="order: {2*(idx+1) + 1}; color: gray;">{result.tags}</div>')
+    s = [
+            f'<div id="result">',
+            f'  <div id="link">{idx+1}: <a href="{result.url}">{result.title}</a></div>',
+            f'  <div id="url">{result.url}</div>',
+            f'  <div id="tags">{result.tags}</div>',
+            f'</div>'
+        ]
+    return '\n'.join(s)
 
 
 def format_results(results, *, time_taken, query, max=30):
