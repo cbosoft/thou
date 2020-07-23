@@ -32,14 +32,33 @@ class Page:
 
         return BeautifulSoup(resp.content, 'html.parser', from_encoding=resp.apparent_encoding)
 
+    @cached_property
+    def domain(self):
+        urlnoprotocol = self.url.replace(self.protocol, '')
+        if '/' in urlnoprotocol:
+            return urlnoprotocol[:urlnoprotocol.index('/')]
+        else:
+            return urlnoprotocol
+
+    @cached_property
+    def protocol(self):
+        if self.url.startswith('https://'):
+            return 'https://'
+        else:
+            return 'http://'
+
 
     @cached_property
     def links(self):
         links = list()
         for tag in self.soup.findAll(tags_with_href):
             link = tag.get('href')
+            if not link:
+                continue
             if not link.startswith('http'):
-                link = self.url+'/'+link
+                if link[0] != '/':
+                    link = '/'+link
+                link = self.protocol+self.domain+link
 
             links.append(link)
         return links
