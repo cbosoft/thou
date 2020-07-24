@@ -83,7 +83,13 @@ class Database:
     def get_link_count(self, page):
         conn = sql.connect(self.path)
         cur = conn.cursor()
-        cur.execute(f'SELECT LINKCOUNT FROM STORE WHERE URL="{page.url}";')
+        try:
+            command = f'SELECT LINKCOUNT FROM STORE WHERE URL="{page.url}";'
+            cur.execute(command)
+        except Exception:
+            print(f'URL: >{page.url}<')
+            print(f'CMD: >{command}<')
+            raise
         res = cur.fetchall()
         link_count = 1
         if res:
