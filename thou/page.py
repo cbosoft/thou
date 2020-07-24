@@ -53,8 +53,16 @@ class Page:
         links = list()
         for tag in self.soup.findAll(tags_with_href):
             link = tag.get('href')
+
             if not link:
                 continue
+
+            if '"' in link:
+                continue
+
+            if '#' in link:
+                continue
+
             if not link.startswith('http'):
                 if link[0] != '/':
                     link = '/'+link
