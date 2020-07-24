@@ -41,5 +41,5 @@ class Result:
 
 
     def __lt__(self, other):
-        '''return true if OTHER is GREATER than SELF'''
+        '''return true if OTHER is GREATER than SELF ∴ reverse sorting by default'''
         return self.rank() > other.rank()
