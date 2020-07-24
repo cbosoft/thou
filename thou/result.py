@@ -18,6 +18,7 @@ class Result:
         self.title = title
         self.tags = tags
         self.link_count = link_count
+        self.query = query
         self.query_regexes = get_query_regexes(query)
 
 
