@@ -48,6 +48,16 @@ class Page:
             return 'http://'
 
 
+    def finish_link(self, link):
+        if link.startswith('http'):
+            return link
+    
+        if link.startswith('/'):
+            return self.protocol+self.domain+link
+        else:
+            return self.protocol+link
+
+
     @cached_property
     def links(self):
         links = list()
@@ -70,12 +80,7 @@ class Page:
                 # form filling link
                 continue
 
-            if not link.startswith('http'):
-                if link[0] != '/':
-                    link = '/'+link
-                link = self.protocol+self.domain+link
-
-            links.append(link)
+            links.append(self.finish_link(link))
         return links
 
 
