@@ -55,12 +55,19 @@ class Page:
             link = tag.get('href')
 
             if not link:
+                # link has no destination
                 continue
 
             if '"' in link:
+                # something's not right here
                 continue
 
-            if '#' in link:
+            if '#' in link or 'javascript:' in link:
+                # javascript link
+                continue
+
+            if '?' in link:
+                # form filling link
                 continue
 
             if not link.startswith('http'):
