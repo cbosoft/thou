@@ -53,9 +53,23 @@ class Page:
             return link
     
         if link.startswith('/'):
-            return self.protocol+self.domain+link
+            link = link[1:]
+
+        domain = self.domain
+        maybe_domain = ''
+        maybe_link = link
+        if '/' in link:
+            maybe_domain = link[:link.index('/')]
+            maybe_link = link[link.index('/'):]
         else:
-            return self.protocol+link
+            maybe_domain = link
+            maybe_link = ''
+        
+        if '.' in maybe_domain:
+            domain = maybe_domain
+            link = maybe_link
+
+        return self.protocol+domain+'/'+link
 
 
     @cached_property
